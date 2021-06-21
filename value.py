@@ -9,6 +9,12 @@ from scipy import stats #The SciPy stats module
 import pandas_ta as ta
 from secrets import IEX_CLOUD_API_TOKEN
 
+
+#Value Calculator
+#Uses P/E, P/B and more to calculate a stocks intrinsic value
+#API isn't completely free to requests stop sometimes
+#
+
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
@@ -66,6 +72,7 @@ if __name__ == '__main__':
     print('Preparing Data... \n')
 
     for ticker_string in ticker_groups:
+        six_month_barset = api.get_barset(ticker_string, 'day', limit=10)
         for ticker in ticker_string:
             try: 
                 print(ticker)
