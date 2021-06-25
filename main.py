@@ -11,6 +11,7 @@ import pandas_ta as ta
 import asyncio
 from secrets import IEX_CLOUD_API_TOKEN
 from threading import Thread
+import time
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
@@ -58,13 +59,13 @@ hqm_dataframe = pd.DataFrame(columns=hqm_columns)
 
 
     
-def prep_data(ticker_string):
+def prep_data(ticker_string: list):
         global hqm_dataframe
         global api
         six_month_barset = api.get_barset(ticker_string, 'day', limit=106)
         for ticker in ticker_string:
             try: 
-                print(ticker)
+                
                 hqm_data_map = dict()
                 
                 hqm_data_map['ticker'] = ticker
@@ -92,7 +93,7 @@ def prep_data(ticker_string):
 
 def main(ticker_groups):
         global hqm_dataframe
-        procs = []
+       
         for ticker_string in ticker_groups:
             prep_data(ticker_string)
 

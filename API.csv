@@ -1,4 +1,4 @@
-symbol,date,isEnabled
+Ticker,date,isEnabled
 A,2021-05-26,true
 AA,2021-05-26,true
 AAA,2021-05-26,true
