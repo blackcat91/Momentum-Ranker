@@ -2,9 +2,9 @@
 Get a ranking of the top momentum stocks of the S&amp;P 500
 
 
-To run type 
+To run momentum scorer type 
 
-python main.py
+python momentum.py
 
 Also comes with an intinsic value ranker though the api that's used for it limits queries
 
