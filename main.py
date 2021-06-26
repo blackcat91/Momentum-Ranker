@@ -12,6 +12,10 @@ import csv
 from secrets import IEX_CLOUD_API_TOKEN
 from threading import Thread
 import time
+import pymongo
+import json
+
+
 
 
 
@@ -63,6 +67,27 @@ if(same_df.empty):
         data.loc[row, 'overall'] = mean(m)
     
     data.to_csv('overall.csv')
+    data.to_json('overall.json')
+    connect = pymongo.MongoClient('mongodb+srv://loop:N6mEAbbE3yIay73G@cluster0.kq7vx.mongodb.net/admin')
+    mydb = connect['hotpick']
+    collection = mydb['stocks']
+    collection.drop()
+    mydb.create_collection('stocks')
+
+    dictionary = csv.DictReader(open('overall.csv'))
+
+    for row in dictionary:
+        stockData = dict()
+        stockData['ticker'] = row['ticker']
+        stockData['momentum'] = row['momentum']
+        stockData['value'] = row['value']
+        stockData['overall'] = row['overall']
+        collection.insert_one(stockData)
+        print('Inserted')
+
+    print('Inserts Complete')
+
+
 
 
 # data = data.loc[data['Ticker'] != diff_df['Ticker']]
