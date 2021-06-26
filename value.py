@@ -149,8 +149,8 @@ class ValueCalculator():
             self.value_dataframe.loc[row, 'RV Score'] = mean(momentum_percentiles)
 
         self.value_dataframe.to_csv('value_strategy.csv')
-
         print('Done')
+        return self.value_dataframe
         
 
 
