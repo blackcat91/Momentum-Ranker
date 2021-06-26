@@ -32,17 +32,20 @@ class StockRanker():
     def create_overall(self):
         try:
             momentumData = pd.read_csv('momentum_strategy.csv')
+            momentumData.set_index('Ticker')
         except Exception:
             print(Exception.message)
             print('Please Run the momentum calulator first.')
+            exit(1)
 
-        momentumData.set_index('Ticker')
+        
         try:
             valueData = pd.read_csv('value_strategy.csv')
+            valueData.set_index('Ticker')
         except Exception:
             print(Exception.message)
             print('Please Run the value calulator first.')
-        valueData.set_index('Ticker')
+            exit(1)
 
 
         col = ['ticker', 'momentum', 'value', 'overall']
@@ -86,7 +89,7 @@ class StockRanker():
                 data.loc[row, 'overall'] = mean(m)
             
             data.to_csv('overall.csv')
-            
+           
 
     def main(self):
         mThread = Thread(target=self.momentumCalc.main, args=())
