@@ -119,6 +119,7 @@ class MomentumCalculator():
         self.hqm_dataframe.to_csv('momentum_startegy.csv')
 
         print('Done')
+        return self.hqm_dataframe
 
    
 
