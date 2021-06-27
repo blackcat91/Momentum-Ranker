@@ -89,9 +89,29 @@ class StockRanker():
                 data.loc[row, 'overall'] = mean(m)
             
             data.to_csv('overall.csv')
+            data.to_json('overall.json')
+            connect = pymongo.MongoClient(MONGO_STRING)
+            mydb = connect['hotpick']
+            collection = mydb['stocks']
+            collection.drop()
+            mydb.create_collection('stocks')
+
+            dictionary = csv.DictReader(open('overall.csv'))
+
+            for row in dictionary:
+                stockData = dict()
+                stockData['ticker'] = row['ticker']
+                stockData['momentum'] = row['momentum']
+                stockData['value'] = row['value']
+                stockData['overall'] = row['overall']
+                collection.insert_one(stockData)
+                print('Inserted')
+
+            print('Inserts Complete')
            
 
     def main(self):
+        print('Calculating... \n Go for a walk. This can take a while!') 
         mThread = Thread(target=self.momentumCalc.main, args=())
         vThread = Thread(target=self.valueCalc.main, args=())
         mThread.start()

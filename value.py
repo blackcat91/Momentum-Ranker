@@ -50,8 +50,6 @@ class ValueCalculator():
         self.API_KEY = 'AK800MFRCDVNA1VJP3PJ'
         self.SECRET_KEY = 'VjkqQrbMqajdeONvxSMP2rGbRNKTb2QJELwM6fHz'
         self.BASE_URL = 'https://api.alpaca.markets'
-        self.TICKER_TO_PREDICT = 'TSLA'
-        self.TICKERS_TO_PREDICT = ['TSLA', 'AAL', 'AAPL', 'BLNK']
         self.api = tradeapi.REST(self.API_KEY, self.SECRET_KEY, base_url=self.BASE_URL)
         self.value_dataframe = pd.DataFrame(columns=self.value_columns)
 
@@ -60,68 +58,70 @@ class ValueCalculator():
         """Yield successive n-sized chunks from lst."""
         for i in range(0, len(lst), n):
             yield lst[i:i + n]   
-    def getTickerData(self, tickers, six_month_barset):
-        for ticker in tickers:
-                try: 
-                    print(ticker)
-                    financials = f'{self.IEX_SANDBOX}/stable/stock/{ticker}/advanced-stats/?token={self.TEST_TOKEN}'
-                    peUrl = f'{self.IEX_SANDBOX}/stable/stock/{ticker}/quote/peRatio?token={self.TEST_TOKEN}'
-                    estimates = f'{self.IEX_SANDBOX}/stable/time-series/CORE_ESTIMATES/{ticker}?token={self.TEST_TOKEN}'
-                    fData = requests.get(financials).json()
-                    peRatio = requests.get(peUrl).json()
-                    eData = requests.get(estimates).json()[0]
-                    fData['peRatio'] = peRatio
-                    fData['AnalystTargetPrice'] = eData['marketConsensusTargetPrice']
+    def get_ticker_data(self, ticker_string, six_month_barset):
+        
+        for ticker in ticker_string:
+            try: 
+                print(ticker)
+                financials = f'{self.IEX_SANDBOX}/stable/stock/{ticker}/advanced-stats/?token={self.TEST_TOKEN}'
+                peUrl = f'{self.IEX_SANDBOX}/stable/stock/{ticker}/quote/peRatio?token={self.TEST_TOKEN}'
+                estimates = f'{self.IEX_SANDBOX}/stable/time-series/CORE_ESTIMATES/{ticker}?token={self.TEST_TOKEN}'
+                fData = requests.get(financials).json()
+                peRatio = requests.get(peUrl).json()
+                eData = requests.get(estimates).json()[0]
+                fData['peRatio'] = peRatio
+                fData['AnalystTargetPrice'] = eData['marketConsensusTargetPrice']
                     
-                except JSONDecodeError:
-                    continue
+            except JSONDecodeError:
+                continue
+            except IndexError:
+                continue
+                    
+            try:
+                value_data_map = dict()
+                value_data_map['ticker'] = ticker
+                try:
+                    value_data_map['price'] = float(six_month_barset[ticker][len(six_month_barset[ticker]) - 1].c)
                 except IndexError:
                     continue
-                    
                 try:
-                    value_data_map = dict()
-                    value_data_map['ticker'] = ticker
-                    try:
-                        value_data_map['price'] = float(six_month_barset[ticker][len(six_month_barset[ticker]) - 1].c)
-                    except IndexError:
-                        continue
-                    try:
-                        value_data_map['peg'] = -(fData['pegRatio'])
-                    except TypeError:
-                        print(fData)
-                        value_data_map['peg'] = np.NaN
-                    try:
-                        value_data_map['pb'] = -np.abs(fData['priceToBook'])
-                    except TypeError:
-                        value_data_map['pb'] = np.NaN
-                    try:
-                        value_data_map['ps'] = -np.abs(fData['priceToSales'])
-                    except TypeError:
-                        value_data_map['ps'] = np.NaN
-
-                    value_data_map['evEBITDA'] = -np.abs(fData['enterpriseValue']/fData['EBITDA'])
-                    value_data_map['evRev'] = -np.abs(fData['enterpriseValueToRevenue'])
-                    try:
-                        value_data_map['target'] = float(fData['AnalystTargetPrice'])
-                    except KeyError:
-                        value_data_map['target'] = np.NaN
-
-                    value_data_map['tpRatio'] = -np.abs(value_data_map['price'] / value_data_map['target'])
-                    print(value_data_map)
-                    self.value_dataframe = self.value_dataframe.append(pd.Series([value_data_map['ticker'],value_data_map['price'], value_data_map['peg'], 'N/A', value_data_map['pb'],'N/A', value_data_map['ps'],'N/A', value_data_map['evEBITDA'], 'N/A', value_data_map['evRev'], 'N/A', value_data_map['target'],value_data_map['tpRatio'],'N/A', 'N/A' ], index=self.value_columns), ignore_index=True)
-                    return self.value_dataframe
+                    value_data_map['peg'] = -(fData['pegRatio'])
                 except TypeError:
-                    print('Index Error')    
+                    print(fData)
+                    value_data_map['peg'] = np.NaN
+                try:
+                    value_data_map['pb'] = -np.abs(fData['priceToBook'])
+                except TypeError:
+                    value_data_map['pb'] = np.NaN
+                try:
+                    value_data_map['ps'] = -np.abs(fData['priceToSales'])
+                except TypeError:
+                    value_data_map['ps'] = np.NaN
+
+                value_data_map['evEBITDA'] = -np.abs(fData['enterpriseValue']/fData['EBITDA'])
+                value_data_map['evRev'] = -np.abs(fData['enterpriseValueToRevenue'])
+                try:
+                    value_data_map['target'] = float(fData['AnalystTargetPrice'])
+                except KeyError:
+                    value_data_map['target'] = np.NaN
+
+                value_data_map['tpRatio'] = -np.abs(value_data_map['price'] / value_data_map['target'])
+                print(value_data_map)
+                self.value_dataframe = self.value_dataframe.append(pd.Series([value_data_map['ticker'],value_data_map['price'], value_data_map['peg'], 'N/A', value_data_map['pb'],'N/A', value_data_map['ps'],'N/A', value_data_map['evEBITDA'], 'N/A', value_data_map['evRev'], 'N/A', value_data_map['target'],value_data_map['tpRatio'],'N/A', 'N/A' ], index=self.value_columns), ignore_index=True)
+        
+            except TypeError:
+                print('Index Error')
+        return self.value_dataframe    
 
     def main(self):
         print('Preparing Data... \n')
 
         for ticker_string in self.ticker_groups:
             six_month_barset = self.api.get_barset(ticker_string, 'day', limit=10)
-            self.getTickerData(ticker_string, six_month_barset)
+            self.get_ticker_data(ticker_string, six_month_barset)
                 
                     
-        for column in ['P/EG Ratio', 'P/B Ratio','P/S Ratio',  'EV/EBITDA Ratio','EV/Revenue Ratio', 'TP Ratio', 'target']:
+        for column in ['P/EG Ratio', 'P/B Ratio','P/S Ratio',  'EV/EBITDA Ratio','EV/Revenue Ratio', 'TP Ratio']:
             self.value_dataframe[column].fillna(self.value_dataframe[column].mean(), inplace = True)
         time_periods = [
                         'P/EG',   
@@ -153,14 +153,20 @@ class ValueCalculator():
         return self.value_dataframe
         
 
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]   
+        
 
+IEX_SANDBOX = 'https://sandbox.iexapis.com'
+TEST_TOKEN = 'Tpk_0e3629e14ac24927b78125d85a218b4a'
+TEST_SECRET = 'Tsk_2f2335c5db654db7b8b0d21da312cbaf'
 
 if __name__ == '__main__':
-    value = ValueCalculator()
-    try:
-        value.main()
-    except Exception:
-        print(Exception.message)
+    
+    val = ValueCalculator()
+    val.main()
     
 
     
