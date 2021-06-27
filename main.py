@@ -34,7 +34,7 @@ class StockRanker():
             momentumData = pd.read_csv('momentum_strategy.csv')
             momentumData.set_index('Ticker')
         except Exception:
-            print(Exception.message)
+            
             print('Please Run the momentum calulator first.')
             exit(1)
 
@@ -43,7 +43,7 @@ class StockRanker():
             valueData = pd.read_csv('value_strategy.csv')
             valueData.set_index('Ticker')
         except Exception:
-            print(Exception.message)
+            
             print('Please Run the value calulator first.')
             exit(1)
 

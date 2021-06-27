@@ -116,7 +116,7 @@ class MomentumCalculator():
             momentum_percentiles.append(self.hqm_dataframe.loc[row, f'RSI Percentile'])
             self.hqm_dataframe.loc[row, 'HQM Score'] = mean(momentum_percentiles)
 
-        self.hqm_dataframe.to_csv('momentum_startegy.csv')
+        self.hqm_dataframe.to_csv('momentum_strategy.csv')
 
         print('Done')
         return self.hqm_dataframe
@@ -135,7 +135,7 @@ if __name__ == '__main__':
         momCalc = MomentumCalculator()
         momCalc.main()
     except Exception:
-        print(Exception.message)
+        print("Sorry, we tried...")
 
 
 
