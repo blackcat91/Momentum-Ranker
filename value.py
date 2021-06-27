@@ -60,7 +60,7 @@ class ValueCalculator():
         """Yield successive n-sized chunks from lst."""
         for i in range(0, len(lst), n):
             yield lst[i:i + n]   
-    def getTickerData(self, tickers):
+    def getTickerData(self, tickers, six_month_barset):
         for ticker in tickers:
                 try: 
                     print(ticker)
@@ -118,7 +118,7 @@ class ValueCalculator():
 
         for ticker_string in self.ticker_groups:
             six_month_barset = self.api.get_barset(ticker_string, 'day', limit=10)
-            self.getTickerData(ticker_string)
+            self.getTickerData(ticker_string, six_month_barset)
                 
                     
         for column in ['P/EG Ratio', 'P/B Ratio','P/S Ratio',  'EV/EBITDA Ratio','EV/Revenue Ratio', 'TP Ratio', 'target']:
