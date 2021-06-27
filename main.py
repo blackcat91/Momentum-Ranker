@@ -157,8 +157,3 @@ if __name__ == '__main__':
     else:
         ranker.main()
               
-
-
-
-# data = data.loc[data['Ticker'] != diff_df['Ticker']]
-# diff_df.to_csv('diff.csv')
