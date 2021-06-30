@@ -79,6 +79,7 @@ class StockRanker():
             
             data['ticker'] = valueData['Ticker']
             data['value'] = valueData['RV Score']
+            data['company'] = valueData['Company']
             data['momentum'] = momentumData['HQM Score']
             data['momentum'].fillna(data['momentum'].mean(), inplace=True)
 
@@ -103,6 +104,7 @@ class StockRanker():
                 stockData['ticker'] = row['ticker']
                 stockData['momentum'] = row['momentum']
                 stockData['value'] = row['value']
+                stockData['company'] = row['company']
                 stockData['overall'] = row['overall']
                 collection.insert_one(stockData)
                 print('Inserted')

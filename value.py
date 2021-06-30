@@ -31,6 +31,7 @@ class ValueCalculator():
             self.symbol_strings.append(','.join(self.ticker_groups[i]))
         self.value_columns = [
                     'Ticker', 
+                    'Company',
                     'Price', 
                     'P/EG Ratio',
                     'P/EG Percentile',
@@ -71,7 +72,7 @@ class ValueCalculator():
                 eData = requests.get(estimates).json()[0]
                 fData['peRatio'] = peRatio
                 fData['AnalystTargetPrice'] = eData['marketConsensusTargetPrice']
-                    
+                
             except JSONDecodeError:
                 continue
             except IndexError:
@@ -80,12 +81,14 @@ class ValueCalculator():
             try:
                 value_data_map = dict()
                 value_data_map['ticker'] = ticker
+                value_data_map['company'] = fData['companyName']
                 try:
                     value_data_map['price'] = float(six_month_barset[ticker][len(six_month_barset[ticker]) - 1].c)
                 except IndexError:
                     continue
                 try:
                     value_data_map['peg'] = -(fData['pegRatio'])
+                    
                 except TypeError:
                     print(fData)
                     value_data_map['peg'] = np.NaN
@@ -107,7 +110,7 @@ class ValueCalculator():
 
                 value_data_map['tpRatio'] = -np.abs(value_data_map['price'] / value_data_map['target'])
                 print(value_data_map)
-                self.value_dataframe = self.value_dataframe.append(pd.Series([value_data_map['ticker'],value_data_map['price'], value_data_map['peg'], 'N/A', value_data_map['pb'],'N/A', value_data_map['ps'],'N/A', value_data_map['evEBITDA'], 'N/A', value_data_map['evRev'], 'N/A', value_data_map['target'],value_data_map['tpRatio'],'N/A', 'N/A' ], index=self.value_columns), ignore_index=True)
+                self.value_dataframe = self.value_dataframe.append(pd.Series([value_data_map['ticker'],value_data_map['company'],value_data_map['price'], value_data_map['peg'], 'N/A', value_data_map['pb'],'N/A', value_data_map['ps'],'N/A', value_data_map['evEBITDA'], 'N/A', value_data_map['evRev'], 'N/A', value_data_map['target'],value_data_map['tpRatio'],'N/A', 'N/A' ], index=self.value_columns), ignore_index=True)
         
             except TypeError:
                 print('Index Error')
