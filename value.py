@@ -101,14 +101,14 @@ class ValueCalculator():
                 except TypeError:
                     value_data_map['ps'] = np.NaN
 
-                value_data_map['evEBITDA'] = -np.abs(fData['enterpriseValue']/fData['EBITDA'])
+                value_data_map['evEBITDA'] = -np.abs(np.divide(fData['enterpriseValue'],fData['EBITDA']))
                 value_data_map['evRev'] = -np.abs(fData['enterpriseValueToRevenue'])
                 try:
                     value_data_map['target'] = float(fData['AnalystTargetPrice'])
                 except KeyError:
                     value_data_map['target'] = np.NaN
 
-                value_data_map['tpRatio'] = -np.abs(value_data_map['price'] / value_data_map['target'])
+                value_data_map['tpRatio'] = -np.abs(np.divide(value_data_map['price'] , value_data_map['target']))
                 print(value_data_map)
                 self.value_dataframe = self.value_dataframe.append(pd.Series([value_data_map['ticker'],value_data_map['company'],value_data_map['price'], value_data_map['peg'], 'N/A', value_data_map['pb'],'N/A', value_data_map['ps'],'N/A', value_data_map['evEBITDA'], 'N/A', value_data_map['evRev'], 'N/A', value_data_map['target'],value_data_map['tpRatio'],'N/A', 'N/A' ], index=self.value_columns), ignore_index=True)
         
@@ -137,7 +137,7 @@ class ValueCalculator():
 
         for row in self.value_dataframe.index:
             for time_period in time_periods:
-                self.value_dataframe.loc[row, f'{time_period} Percentile'] = stats.percentileofscore(self.value_dataframe[f'{time_period} Ratio'], self.value_dataframe.loc[row, f'{time_period} Ratio'])/100
+                self.value_dataframe.loc[row, f'{time_period} Percentile'] = stats.percentileofscore(self.value_dataframe[f'{time_period} Ratio'], np.divide(self.value_dataframe.loc[row, f'{time_period} Ratio']),100)
             
 
         print('Lining up our ducks... \n')
