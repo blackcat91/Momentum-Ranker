@@ -20,8 +20,7 @@ BASE_URL = 'https://api.alpaca.markets'
 
 class MomentumCalculator():
     def __init__(self, *args, **kwargs):
-        self.tickers = pd.read_csv('sp_500_stocks.csv')
-        self.listSym = self.tickers['Ticker'].tolist()
+        self.listSym = pd.read_csv('sp_500_stocks.csv')['Ticker'].tolist()
         self.ticker_groups = list(self.chunks(self.listSym, 100))
         self.symbol_strings = []
         for i in range(0, len(self.ticker_groups)):
