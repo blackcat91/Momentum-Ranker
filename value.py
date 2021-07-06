@@ -159,10 +159,6 @@ def chunks(lst, n):
         yield lst[i:i + n]   
         
 
-IEX_SANDBOX = 'https://sandbox.iexapis.com'
-TEST_TOKEN = 'Tpk_0e3629e14ac24927b78125d85a218b4a'
-TEST_SECRET = 'Tsk_2f2335c5db654db7b8b0d21da312cbaf'
-
 if __name__ == '__main__':
     
     val = ValueCalculator()
