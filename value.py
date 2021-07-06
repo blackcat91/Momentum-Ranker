@@ -64,12 +64,9 @@ class ValueCalculator():
         for ticker in ticker_string:
             try: 
                 print(ticker)
-                financials = f'{self.IEX_SANDBOX}/stable/stock/{ticker}/advanced-stats/?token={self.TEST_TOKEN}'
-                peUrl = f'{self.IEX_SANDBOX}/stable/stock/{ticker}/quote/peRatio?token={self.TEST_TOKEN}'
-                estimates = f'{self.IEX_SANDBOX}/stable/time-series/CORE_ESTIMATES/{ticker}?token={self.TEST_TOKEN}'
-                fData = requests.get(financials).json()
-                peRatio = requests.get(peUrl).json()
-                eData = requests.get(estimates).json()[0]
+                fData = requests.get(f'{self.IEX_SANDBOX}/stable/stock/{ticker}/advanced-stats/?token={self.TEST_TOKEN}').json()
+                peRatio = requests.get(f'{self.IEX_SANDBOX}/stable/stock/{ticker}/quote/peRatio?token={self.TEST_TOKEN}').json()
+                eData = requests.get(f'{self.IEX_SANDBOX}/stable/time-series/CORE_ESTIMATES/{ticker}?token={self.TEST_TOKEN}').json()[0]
                 fData['peRatio'] = peRatio
                 fData['AnalystTargetPrice'] = eData['marketConsensusTargetPrice']
                 
